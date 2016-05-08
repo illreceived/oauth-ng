@@ -1,4 +1,4 @@
-/* oauth-ng - v0.4.10 - 2016-04-25 */
+/* oauth-ng - v0.4.10 - 2016-05-09 */
 
 'use strict';
 
@@ -403,6 +403,12 @@ accessTokenService.factory('AccessToken', ['Storage', '$rootScope', '$location',
     return this.token;
   };
 
+
+  service.setToken = function(token) {
+    service.token = token;
+    setToken();
+  }
+
   /**
    * Delete the access token and remove the session.
    * @returns {null}
@@ -575,6 +581,16 @@ endpointClient.factory('Endpoint', ['$rootScope', 'AccessToken', '$q', '$http', 
 
   var service = {};
 
+  var buildOAuthLogoutUrl = function (path, params) {
+    var authPathHasQuery = (path.indexOf('?') == -1) ? false : true;
+    var appendChar = (authPathHasQuery) ? '&' : '?';
+    return params.site +
+      path +
+      appendChar +
+      "id_token_hint=" + AccessToken.token.id_token + '&' +
+      "post_logout_redirect_uri=" + encodeURIComponent(params.redirectUri);
+  };
+
   var buildOauthUrl = function (path, params) {
     var oAuthScope = (params.scope) ? encodeURIComponent(params.scope) : '',
       state = (params.state) ? encodeURIComponent(params.state) : '',
@@ -663,11 +679,12 @@ endpointClient.factory('Endpoint', ['$rootScope', 'AccessToken', '$q', '$http', 
 
   service.logout = function() {
     var params = service.config;
-    AccessToken.destroy();
-    $rootScope.$broadcast('oauth:logging-out');
-    if( params.logoutPath ) {
-      window.location.replace(buildOauthUrl(params.logoutPath, params));
+   $rootScope.$broadcast('oauth:logging-out');
+    if (!!AccessToken.get() && params.logoutPath)
+    {
+      window.location.replace(buildOAuthLogoutUrl(params.logoutPath, params));
     }
+    AccessToken.destroy();
     $rootScope.$broadcast('oauth:logout');
   };
 
