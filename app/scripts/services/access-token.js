@@ -39,6 +39,11 @@ accessTokenService.factory('AccessToken', ['Storage', '$rootScope', '$location',
     return this.token;
   };
 
+  service.setToken = function(token) {
+    service.token = token;
+    setToken();
+  };
+
   /**
    * Delete the access token and remove the session.
    * @returns {null}
