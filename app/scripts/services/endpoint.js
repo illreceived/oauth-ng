@@ -22,7 +22,8 @@ endpointClient.factory('Endpoint', ['$rootScope', 'AccessToken', '$q', '$http', 
       authPathHasQuery = (params.authorizePath.indexOf('?') == -1) ? false : true,
       appendChar = (authPathHasQuery) ? '&' : '?',    //if authorizePath has ? already append OAuth2 params
       nonceParam = (params.nonce) ? '&nonce=' + params.nonce : '',
-      responseType = encodeURIComponent(params.responseType);
+      responseType = encodeURIComponent(params.responseType),
+      prompt = (params.prompt) ? '&prompt=' + params.prompt : '';
 
     return params.site +
       path +
@@ -30,7 +31,7 @@ endpointClient.factory('Endpoint', ['$rootScope', 'AccessToken', '$q', '$http', 
       'client_id=' + encodeURIComponent(params.clientId) + '&' +
       'redirect_uri=' + encodeURIComponent(params.redirectUri) + '&' +
       'scope=' + oAuthScope + '&' +
-      'state=' + state + nonceParam;
+      'state=' + state + nonceParam + prompt;
   };
 
   var extendValidity = function (tokenInfo) {
