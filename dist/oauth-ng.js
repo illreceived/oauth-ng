@@ -1,4 +1,4 @@
-/* oauth-ng-blackbay - v0.4.12 - 2016-05-30 */
+/* oauth-ng-blackbay - v0.4.13 - 2017-01-18 */
 
 'use strict';
 
@@ -617,8 +617,8 @@ profileClient.factory('Profile', ['$http', 'AccessToken', '$rootScope', function
 
   service.find = function(uri) {
     var promise = $http.get(uri, { headers: headers() });
-    promise.success(function(response) {
-        profile = response;
+    promise.then(function(response) {
+        profile = response.data;
         $rootScope.$broadcast('oauth:profile', profile);
       });
     return promise;
@@ -827,8 +827,8 @@ directives.directive('oauth', [
       };
 
       var compile = function() {
-        $http.get(scope.template, { cache: $templateCache }).success(function(html) {
-          element.html(html);
+        $http.get(scope.template, { cache: $templateCache }).then(function(html) {
+          element.html(html.data);
           $compile(element.contents())(scope);
         });
       };
@@ -837,8 +837,8 @@ directives.directive('oauth', [
         var token = AccessToken.get();
 
         if (token && token.access_token && scope.profileUri) {
-          Profile.find(scope.profileUri).success(function(response) {
-            scope.profile = response;
+          Profile.find(scope.profileUri).then(function(response) {
+            scope.profile = response.data;
           });
         }
       };
