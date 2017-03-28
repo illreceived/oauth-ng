@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2 (28 Mar, 2017)
+
+* Increased limit on validation of id token iat to 5 minutes
+
 ## 0.4.10 (Apr 25, 2016)
 
 * Support for loading keys from `.well-known/openid-configuration`

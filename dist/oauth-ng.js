@@ -1,4 +1,4 @@
-/* oauth-ng - v0.4.10 - 2016-05-09 */
+/* oauth-ng-blackbay - v0.5.2 - 2017-03-29 */
 
 'use strict';
 
@@ -83,6 +83,7 @@ idTokenService.factory('IdToken', ['Storage', function(Storage) {
         valid = this.validateAccessToken(params.id_token, params.access_token);
       }
     } catch (error) {
+      console.log(error);
       message = error.message;
     }
 
@@ -200,7 +201,8 @@ idTokenService.factory('IdToken', ['Storage', function(Storage) {
       var payload = getJsonObject(idtParts[1]);
       if (payload) {
         var now =  new Date() / 1000;
-        if (payload.iat > now + 60)
+        // Set the range for rejecting tokens based on iat to 5 minutes
+        if (payload.iat > now + 300)
           throw new OidcException('ID Token issued time is later than current time');
 
         if (payload.exp < now )
@@ -865,7 +867,7 @@ directives.directive('oauth', [
         responseType: '@',  // (optional) response type, defaults to token (use 'token' for implicit flow and 'code' for authorization code flow
         scope: '@',         // (optional) scope
         profileUri: '@',    // (optional) user profile uri (e.g http://example.com/me)
-        template: '@',      // (optional) template to render (e.g bower_components/oauth-ng/dist/views/templates/default.html)
+        template: '@',      // (optional) template to render (e.g bower_components/oauth-ng-blackbay/dist/views/templates/default.html)
         text: '@',          // (optional) login text
         authorizePath: '@', // (optional) authorization url
         state: '@',         // (optional) An arbitrary unique string created by your app to guard against Cross-site Request Forgery
@@ -906,7 +908,7 @@ directives.directive('oauth', [
       var initAttributes = function() {
         scope.authorizePath = scope.authorizePath || '/oauth/authorize';
         scope.tokenPath     = scope.tokenPath     || '/oauth/token';
-        scope.template      = scope.template      || 'bower_components/oauth-ng/dist/views/templates/default.html';
+        scope.template      = scope.template      || 'bower_components/oauth-ng-blackbay/dist/views/templates/default.html';
         scope.responseType  = scope.responseType  || 'token';
         scope.text          = scope.text          || 'Sign In';
         scope.state         = scope.state         || undefined;
