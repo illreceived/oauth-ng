@@ -1,4 +1,4 @@
-/* oauth-ng-blackbay - v0.5.0 - 2017-03-29 */
+/* oauth-ng-blackbay - v0.5.3 - 2017-03-29 */
 
 'use strict';
 
