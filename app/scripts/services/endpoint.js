@@ -6,7 +6,7 @@ endpointClient.factory('Endpoint', ['$rootScope', 'AccessToken', '$q', '$http', 
 
   var service = {};
 
- var buildOAuthLogoutUrl = function (path, params) {
+  var buildOAuthLogoutUrl = function (path, params) {
     var authPathHasQuery = (path.indexOf('?') == -1) ? false : true;
     var appendChar = (authPathHasQuery) ? '&' : '?';
     return params.site +

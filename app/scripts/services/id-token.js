@@ -62,6 +62,7 @@ idTokenService.factory('IdToken', ['Storage', function(Storage) {
         valid = this.validateAccessToken(params.id_token, params.access_token);
       }
     } catch (error) {
+      console.log(error);
       message = error.message;
     }
 
@@ -142,9 +143,20 @@ idTokenService.factory('IdToken', ['Storage', function(Storage) {
        TODO: Support for "jku" (JWK Set URL), "x5u" (X.509 URL), "x5c" (X.509 Certificate Chain) parameter to get key
        per http://tools.ietf.org/html/draft-ietf-jose-json-web-signature-26#page-9
        */
-    } else { //Use configured public key
-      var jwk = getJsonObject(this.pubKey);
-      matchedPubKey = jwk ? jwk : this.pubKey; //JWK or PEM
+    } else {
+      //Try to load the key from .well-known configuration
+      var oidcConfig = Storage.get('oidcConfig');
+      if (angular.isDefined(oidcConfig) && oidcConfig.jwks && oidcConfig.jwks.keys) {
+        oidcConfig.jwks.keys.forEach(function(key) {
+          if (key.kid === header.kid) {
+            matchedPubKey = key;
+          }
+        });
+      } else {
+        //Use configured public key
+        var jwk = getJsonObject(this.pubKey);
+        matchedPubKey = jwk ? jwk : this.pubKey; //JWK or PEM
+      }
     }
 
     if(!matchedPubKey) {
@@ -168,7 +180,8 @@ idTokenService.factory('IdToken', ['Storage', function(Storage) {
       var payload = getJsonObject(idtParts[1]);
       if (payload) {
         var now =  new Date() / 1000;
-        if (payload.iat > now + 60)
+        // Set the range for rejecting tokens based on iat to 5 minutes
+        if (payload.iat > now + 300)
           throw new OidcException('ID Token issued time is later than current time');
 
         if (payload.exp < now )
