@@ -62,6 +62,7 @@ idTokenService.factory('IdToken', ['Storage', function(Storage) {
         valid = this.validateAccessToken(params.id_token, params.access_token);
       }
     } catch (error) {
+      console.log(error);
       message = error.message;
     }
 
@@ -168,7 +169,8 @@ idTokenService.factory('IdToken', ['Storage', function(Storage) {
       var payload = getJsonObject(idtParts[1]);
       if (payload) {
         var now =  new Date() / 1000;
-        if (payload.iat > now + 60)
+        // increased limit on check to 5 minutes
+        if (payload.iat > now + 300)
           throw new OidcException('ID Token issued time is later than current time');
 
         if (payload.exp < now )
